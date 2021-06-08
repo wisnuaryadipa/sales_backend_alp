@@ -1,7 +1,6 @@
 import express from 'express';
 import config from './config';
 import Logger from './loaders/logger';
-import db from './loaders/sequelize'
 
 
 import './injection/module/ProcessEnv'
