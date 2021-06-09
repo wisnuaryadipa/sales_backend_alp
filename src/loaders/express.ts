@@ -7,7 +7,7 @@ import config from '../config';
 import Logger from './logger';
 
 
-export default (app: express.Application) => {
+export default ({app}: {app: express.Application}) => {
   
   app.get('/status', (req, res) => {
     res.send('Express + TypeScript Server')

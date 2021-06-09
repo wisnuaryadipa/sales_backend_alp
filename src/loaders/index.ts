@@ -6,11 +6,14 @@ import Logger from './logger';
 
 const loaders = async ({expressApp} : {expressApp: express.Application}) => {
 
-    const sequalizeConect = sequelizeLoader().authenticate();
-    sequalizeConect;
+    const sequalizeConection = sequelizeLoader().authenticate();
+    sequalizeConection;
     Logger.info('✌️ DB loaded and connected!');
 
-    await expressLoader(expressApp)
+    
+
+    await expressLoader({app: expressApp});
+
 }
 
 export default loaders;
