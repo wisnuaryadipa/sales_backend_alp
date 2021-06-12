@@ -1,6 +1,6 @@
-import {DataTypes} from 'sequelize';
+import {DataTypes, Sequelize} from 'sequelize';
 
-module.exports = (sequelize:any) => {
+module.exports = (sequelize: Sequelize) => {
   const Users = sequelize.define('Users', {
     name: {
       type: DataTypes.STRING,

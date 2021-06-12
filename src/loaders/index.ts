@@ -9,9 +9,7 @@ const loaders = async ({expressApp} : {expressApp: express.Application}) => {
     const sequalizeConection = sequelizeLoader().authenticate();
     sequalizeConection;
     Logger.info('✌️ DB loaded and connected!');
-
     
-
     await expressLoader({app: expressApp});
 
 }

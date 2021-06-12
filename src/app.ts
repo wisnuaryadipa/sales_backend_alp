@@ -10,9 +10,9 @@ import './injection/module/ProcessEnv'
 async function startServer() {
     const app = express();
     
-    await loader({ expressApp: app });
 
-    app.get('/', (req, res) => res.send('Express + TypeScript Server'));
+    await loader({ expressApp: app }); // Load all middleware and routes
+
     
     app.listen(config.port, () => {
         Logger.info(`
