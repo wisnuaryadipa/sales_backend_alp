@@ -1,13 +1,13 @@
 import {Router} from 'express';
-import controllers from '../controllers';
+import controllers from '@src/controllers';
 
-const route = Router();
 const api = (app: Router) => {
 
-    app.use('/api', route);
+    const users = Router();
+    users.get('/all', controllers.user.userController.index);
 
-    route.get('/user', controllers.user.userController.index);
-    
+    // create prefix
+    app.use('/users', users);
 }
 
 export default api;

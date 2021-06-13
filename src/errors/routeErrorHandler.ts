@@ -3,7 +3,6 @@ import {IError} from '@src/interfaces/IError';
 
 export default (expressApp: Router) => {
 
-  
   expressApp.use((req, res, next) => {
     /// catch 404 and forward to error handler
     const err: IError = new Error('Not Found') ;
@@ -32,4 +31,5 @@ export default (expressApp: Router) => {
       },
     });
   }) as ErrorRequestHandler);
+  
 }
