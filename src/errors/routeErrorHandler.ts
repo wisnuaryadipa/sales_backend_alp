@@ -1,35 +1,18 @@
-import {Router, ErrorRequestHandler} from 'express';
-import {IError} from '@src/interfaces/IError';
+import {Router, ErrorRequestHandler, Request, Response} from 'express';
+import ApplicationError from '@src/errors/applicationError';
+import flags from '@src/errors/flags';
 
 export default (expressApp: Router) => {
-
-  expressApp.use((req, res, next) => {
-    /// catch 404 and forward to error handler
-    const err: IError = new Error('Not Found') ;
-    err.status = 404;
-    next(err);
-  });
   
-  expressApp.use(((err, req, res, next) => {
-    /**
-     * Handle 401 thrown by express-jwt library
-     */
-    if (err.name === 'UnauthorizedError') {
-      return res
-        .status(err.status)
-        .send({ message: err.message })
-        .end();
+  expressApp.use((err: any, _req: Request, res: Response) => {
+    /*
+      Middleware ErrorHandling
+      If err are not simmilar with ApplicationErro 
+      will return error 500 Internal Server Error 
+    */
+    if (err instanceof ApplicationError) res.status(err.status).json(err)
+    else {
+      res.status(500).json(new ApplicationError({flag: flags.INTERNAL_SERVER_ERROR, httpCode: 500}))
     }
-    return next(err);
-  }) as ErrorRequestHandler);
-
-  expressApp.use(((err, req, res, next) => {
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-      },
-    });
-  }) as ErrorRequestHandler);
-  
+  })
 }

@@ -1,13 +1,10 @@
 import {Router} from 'express';
-import api from './api';
-import web from './web';
+import api from '@src/routes/api';
+import web from '@src/routes/web';
 
-const router = () => {
-    const app = Router();
-    api(app)
-    web(app)
-    
-    return app;
-}
+
+const router = Router();
+api(router);
+web(router);
 
 export default router;
