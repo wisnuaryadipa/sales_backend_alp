@@ -1,4 +1,4 @@
-import {Request} from 'express';
+import {Request, RequestHandler} from 'express';
 import sendResponse from '@src/utilities/sendResponse';
 import flags from '@src/errors/flags';
 import Joi from 'joi';
@@ -11,33 +11,11 @@ interface IRequestValidationSchema {
     header?: Joi.Schema;
 }
 
-const baseController = {
+export class BaseController {
+    public Joi = Joi;
 
-    sendResponses : sendResponse,
-    validateRequest: async (schema: IRequestValidationSchema, req: Request) => {
-        const { query, body, headers, params } = req
+    sendResponse = sendResponse
 
-        if (schema.query)
-        await schema.query.validateAsync(query).catch(error => {
-            throw new BadRequest({ message: error.message, flag: flags.INVALID_QUERY_PARAM })
-        })
+    requestHandler!: RequestHandler;
 
-        if (schema.body)
-        await schema.body.validateAsync(body).catch(error => {
-            throw new BadRequest({ message: error.message, flag: flags.INVALID_BODY })
-        })
-
-        if (schema.header)
-        await schema.header.validateAsync(headers, { allowUnknown: true }).catch(error => {
-            throw new BadRequest({ message: error.message, flag: flags.INVALID_HEADER })
-        })
-
-        if (schema.params)
-        await schema.params.validateAsync(params, { allowUnknown: true }).catch(error => {
-            throw new BadRequest({ message: error.message, flag: flags.INVALID_URL_PARAM })
-        })
-    }
 }
-
-export {sendResponse}
-export default baseController;

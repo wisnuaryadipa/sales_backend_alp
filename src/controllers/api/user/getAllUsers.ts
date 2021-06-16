@@ -1,22 +1,14 @@
 import {Request, Response} from 'express';
-import {sendResponse} from '@src/controllers/baseController'
+import {BaseController} from '@src/controllers/baseController'
 import { options } from 'joi';
 import Joi from 'joi';
 
-const requestValidationSchema = {
-    body: Joi.object({}),
-    query: Joi.object({}),
-    header: Joi.object({}).unknown(),
-  }
+class Controller extends BaseController{
 
-const userController = {
-    index: (req: Request, res: Response) => {
-        return sendResponse(req, res, {status : 200})
-    },
-    requestHandler : (req: Request, res: Response) => {
-        
+
+    requestHandler = async(req: Request, res: Response) => {
+        this.sendResponse
     }
-    
 }
 
-export default userController;
+export default new Controller(); 
