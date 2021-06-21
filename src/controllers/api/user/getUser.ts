@@ -7,8 +7,9 @@ import Joi from 'joi';
 class Controller extends BaseController{
 
     requestHandler = async(req: Request, res: Response) => {
-        const data = services.user.getAllUsers();
-        this.sendResponse(req, res, {data})
+        
+        const data = services.user.getUserById(req.params.userid);
+        this.sendResponse(req, res, { data });
     }
 }
 

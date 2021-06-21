@@ -4,28 +4,28 @@ import controllers from '@src/controllers';
 const api = (app: Router) => {
 
     const users = Router();
-    users.get('/all', controllers.user.userController.index);
-    users.get('/all', controllers.user.userController.index);
-    users.get('/:userId', controllers.user.userController.index);
-    users.put('/:userId', controllers.user.userController.index);
-    users.post('/add', controllers.user.userController.index);
-    users.delete('/delete', controllers.user.userController.index);
+    users.get('/all', controllers.user.getAllUsers.requestHandler);
+    users.get('/all', controllers.user.getAllUsers.requestHandler);
+    users.put('/:uid', controllers.user.getUser.requestHandler);
+    users.put('/:uid', controllers.user.getAllUsers.requestHandler);
+    users.post('/add', controllers.user.getAllUsers.requestHandler);
+    users.delete('/delete', controllers.user.getAllUsers.requestHandler);
 
     const roles = Router();
-    roles.get('/all', controllers.user.userController.index);
-    roles.get('/all', controllers.user.userController.index);
-    roles.get('/:roleId', controllers.user.userController.index);
-    roles.put('/:roleId', controllers.user.userController.index);
-    roles.post('/add', controllers.user.userController.index);
-    roles.delete('/delete', controllers.user.userController.index);
+    roles.get('/all', controllers.user.getAllUsers.requestHandler);
+    roles.get('/all', controllers.user.getAllUsers.requestHandler);
+    roles.get('/:roleId', controllers.user.getAllUsers.requestHandler);
+    roles.put('/:roleId', controllers.user.getAllUsers.requestHandler);
+    roles.post('/add', controllers.user.getAllUsers.requestHandler);
+    roles.delete('/delete', controllers.user.getAllUsers.requestHandler);
     
     const permissions = Router();
-    permissions.get('/all', controllers.user.userController.index);
-    permissions.get('/all', controllers.user.userController.index);
-    permissions.get('/:permissionId', controllers.user.userController.index);
-    permissions.put('/:permissionId', controllers.user.userController.index);
-    permissions.post('/add', controllers.user.userController.index);
-    permissions.delete('/delete', controllers.user.userController.index);
+    permissions.get('/all', controllers.user.getAllUsers.requestHandler);
+    permissions.get('/all', controllers.user.getAllUsers.requestHandler);
+    permissions.get('/:permissionId', controllers.user.getAllUsers.requestHandler);
+    permissions.put('/:permissionId', controllers.user.getAllUsers.requestHandler);
+    permissions.post('/add', controllers.user.getAllUsers.requestHandler);
+    permissions.delete('/delete', controllers.user.getAllUsers.requestHandler);
 
     // create prefix
     app.use('/users', users);

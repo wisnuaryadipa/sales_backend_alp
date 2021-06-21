@@ -3,7 +3,6 @@ import sequelize from '../../loaders/sequelize';
 import Sequelize from 'sequelize';
 import {IDbModel} from '../../interfaces/db/IDbModel';
 
-const db: IDbModel = {};
 
 const models: IDbModel = {
     Users: require('./Users')(sequelize),
@@ -12,9 +11,9 @@ const models: IDbModel = {
 
 Object.keys(models).forEach(key => {
     if (models[key].associate) {
-        models[key].associate(db);
+        models[key].associate(models);
     }
 })
 
 export {sequelize, Sequelize}
-export default db;
+export default models;

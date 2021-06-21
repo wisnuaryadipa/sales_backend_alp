@@ -1,9 +1,11 @@
-import userController from '@src/controllers/api/userController'
+import getAllUsers from '@src/controllers/api/user/getAllUsers';
+import getUser from '@src/controllers/api/user/getUser';
 
 
 const api = {
     user: {
-        userController
+        getAllUsers,
+        getUser
     }
 }
 
