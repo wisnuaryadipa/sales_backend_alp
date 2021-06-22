@@ -1,11 +1,13 @@
 
-import sequelize from '../../loaders/sequelize';
+import sequelize from '@src/loaders/sequelize';
 import Sequelize from 'sequelize';
-import {IDbModel} from '../../interfaces/db/IDbModel';
+import {IDbModel} from '@src/interfaces/db/IDbModel';
+import Roles from '@src/models/postgres/Roles';
 
 
 const models: IDbModel = {
     Users: require('./Users')(sequelize),
+    Roles: Roles(sequelize),
 
 }
 
