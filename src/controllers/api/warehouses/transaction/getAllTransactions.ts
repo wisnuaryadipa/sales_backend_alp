@@ -8,8 +8,8 @@ import { IUser } from '@src/interfaces/db/IUser';
 class Controller extends BaseController{
 
     requestHandler = async (req: Request, res: Response) => {
-        const data: [IUser] = await services.user.getAllUsers();
-        this.sendResponse(req, res, { data })
+        const data: IUser = await services.warehouse.transaction.getAllTransactions();
+        this.sendResponse(req, res, { data });
     }
 }
 

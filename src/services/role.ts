@@ -1,16 +1,17 @@
 import models from '@src/models/postgres';
+import { IRole } from '@src/interfaces/db/IRole';
 
 class Service {
-    async getAllRoles() {
-        const roles = await models.Roles.findAll();
-        return roles;
-    }
-    async getRole(id: string) {
-        const role = await models.Roles.findOne({where: {id: id}});
+    async getRoleById(roleId: any) {
+        const role: IRole = await models.Roles.findOne({where: {id: roleId}});
         return role;
     }
+    async getAllRoles() {
+        const roles: [IRole] = await models.Roles.findAll();
+        return roles;
+    }
     async getRoleByName(name: string) {
-        const role = await models.Roles.findOne({where: {name: name}});
+        const role: IRole = await models.Roles.findOne({where: {name: name}});
         return role;
     }
 }

@@ -8,8 +8,9 @@ class Service {
         return users;
     }
     async getUserById(id : string) {
-        const user: IUser = await models.Users.findOne({where: {id: id}})
-        return user;
+        const user = await models.Users.findOne({where: {id: id}})
+        // console.log(user.dataValues)
+        return user.dataValues;
     }
     async getUserByUid(uid: string) {
         const user: IUser = await models.Users.findOne({where: {uid: uid}})

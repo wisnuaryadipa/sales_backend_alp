@@ -14,7 +14,7 @@ const api = (app: Router) => {
     const roles = Router();
     roles.get('/all', controllers.role.getAllRoles.requestHandler);
     roles.get('/all', controllers.user.getAllUsers.requestHandler);
-    roles.get('/:roleId', controllers.user.getAllUsers.requestHandler);
+    roles.get('/:roleId', controllers.role.getRole.requestHandler);
     roles.put('/:roleId', controllers.user.getAllUsers.requestHandler);
     roles.post('/add', controllers.user.getAllUsers.requestHandler);
     roles.delete('/delete', controllers.user.getAllUsers.requestHandler);
