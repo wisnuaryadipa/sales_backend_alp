@@ -2,9 +2,7 @@ import express from 'express';
 import config from '@src/config';
 import Logger from '@src/loaders/logger';
 import loader from '@src/loaders';
-
-
-import './injection/module/ProcessEnv'
+import '@src/injection/module/ProcessEnv'
 // rest of the code remains same
 
 async function startServer() {

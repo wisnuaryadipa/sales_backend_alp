@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import {IDBEnv} from '../interfaces/IConfigs'
+import {IDBEnv} from '@src/interfaces/IConfigs'
 
 const envFound = dotenv.config();
 const port = parseInt(process.env.PORT || "80")

@@ -1,5 +1,5 @@
-import config from '../config'
-import {IDBEnv, IDBType} from '../interfaces/IConfigs'
+import config from '@src/config'
+import {IDBEnv, IDBType} from '@src/interfaces/IConfigs'
 
 const env = (process.env.NODE_ENV || 'development');
 const dbConfig: IDBType = config.db[env];
