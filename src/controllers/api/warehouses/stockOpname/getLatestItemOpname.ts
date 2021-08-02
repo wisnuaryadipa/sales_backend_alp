@@ -9,7 +9,7 @@ class Controller extends BaseController{
 
     requestHandler = async (req: Request, res: Response) => {
         const itemId = req.params.itemId;
-        const data: IUser = await services.warehouse.stockOpname.getOpnamesByItemId(itemId);
+        const data = await services.warehouse.stockOpname.getLatestOpnameByItemId(itemId);
         this.sendResponse(req, res, { data });
     }
 }

@@ -1,22 +1,27 @@
 import {DataTypes, Sequelize} from 'sequelize';
 
-const stck_raw_tm_gudang = (sequelize: Sequelize) => {
-    const stck_raw_tm_gudang = sequelize.define('stck_raw_tm_gudang', {
-        nama_gudang: {
+const stck_raw_tm_sub_jenisitem = (sequelize: Sequelize) => {
+    const stck_raw_tm_sub_jenisitem = sequelize.define('stck_raw_tm_sub_jenisitem', {
+        uid: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        lastedit_by: {
-            type: DataTypes.INTEGER,
+        sub_jenis_item: {
+            type: DataTypes.STRING,
             allowNull: false
         },
-        created_by: {
-            type: DataTypes.INTEGER,
-            allowNull: true
+        alias: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
         status: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        created_by: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            field: 'created_by'
         },
         createdAt: {
             type: DataTypes.DATE,
@@ -28,15 +33,11 @@ const stck_raw_tm_gudang = (sequelize: Sequelize) => {
             defaultValue: DataTypes.NOW,
             field: 'updated_at'
         },
-        alias: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
       }, {
         // Another option
       });
     
-    return stck_raw_tm_gudang;
+    return stck_raw_tm_sub_jenisitem;
 }
 
-export default stck_raw_tm_gudang;
+export default stck_raw_tm_sub_jenisitem;

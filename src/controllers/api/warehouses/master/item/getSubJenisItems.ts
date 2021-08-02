@@ -18,7 +18,7 @@ class Controller extends BaseController {
          * 
         */
         
-        const data = services.warehouse.master.subJenisItem.getAllSubJenisItems();
+        const data = await services.warehouse.master.subJenisItem.getAllSubJenisItems();
         this.sendResponse(req, res, {data})
     }
 

@@ -4,13 +4,19 @@ import {services} from '@src/services'
 import { options } from 'joi';
 import Joi from 'joi';
 import { IUser } from '@src/interfaces/db/IUser';
+import moment from 'moment';
 
 class Controller extends BaseController{
 
     requestHandler = async (req: Request, res: Response) => {
-        const itemId = req.params.itemId;
-        const data: IUser = await services.warehouse.stockOpname.getOpnamesByItemId(itemId);
+        const itemId = req.query.itemId?.toString();
+        const beforeDate = moment(req.query.beforeDate?.toString()).toDate();
+        const warehouseId = (req.query.warehouseId?.toString()) ? parseInt(req.query.warehouseId?.toString()) : undefined;
+
+        const data = await services.warehouse.stockOpname.getLatestItemOpnameBeforeDate(itemId, beforeDate, warehouseId);
         this.sendResponse(req, res, { data });
+
+        
     }
 }
 

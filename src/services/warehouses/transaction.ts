@@ -1,5 +1,7 @@
 import models from '@src/models/postgres';
-import IFilterTransaction from '@src/interfaces/warehouse/IFilterTransaction';
+import ITransactions, {TransactionType} from '@src/interfaces/warehouse/ITransactions';
+import moment from 'moment';
+import {Op} from 'sequelize';
 
 class Service {
     async getTransactionById(transactionId: any) {
@@ -22,12 +24,12 @@ class Service {
         const transactions = await models.stck_raw_stock.findAll({where: {item_id: itemId}});
         return transactions;
     }
-    async getFilterTransaction(filterValues: IFilterTransaction) {
+    async getFilterTransaction(filterValues: ITransactions) {
         
         const {dateEnd, dateStart, itemId, warehouseId, transactionType} = filterValues;
         const where: any = {};
 
-        (dateEnd && dateStart) && (where['created_at'] = { $between: [dateStart, dateEnd] });
+        (dateEnd && dateStart) && (where['created_at'] = { [Op.between]: [moment(dateStart), moment(dateEnd)] });
         (itemId) && (where['item_id'] = itemId);
         (warehouseId) && (where['gudang_id'] = warehouseId);
         (transactionType) && (where['status'] = transactionType);
@@ -35,7 +37,25 @@ class Service {
         const transactions = await models.stck_raw_stock.findAll({where});
         return transactions;
     }
-    
+    async getTotalQuantity(args :any) {
+        
+        const {dateEnd, dateStart, itemId, warehouseId, transactionType} = args;
+        let transactions = 0;
+        const where: any = {};
+        console.log(args);
+        (dateEnd && dateStart) && (where['created_at'] = { [Op.between]: [moment(dateStart), moment(dateEnd)] });
+        (itemId) && (where['item_id'] = itemId);
+        (warehouseId) && (where['gudang_id'] = warehouseId);
+        (transactionType) && (where['status'] = transactionType);
+
+        await models.stck_raw_stock.sum('quantity', {where}).then((transaction: any) => {
+            transactions = transaction;
+        }).catch((err: any) => {
+            console.log(err);
+        });
+
+        return (transactions) ? transactions : 0;
+    }
 }
 
 export default new Service();

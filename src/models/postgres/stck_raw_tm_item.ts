@@ -18,12 +18,12 @@ const stck_raw_tm_item = (sequelize: Sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        created_at: {
+        createdAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             field: 'created_at'
         },
-        updated_at: {
+        updatedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             field: 'updated_at'

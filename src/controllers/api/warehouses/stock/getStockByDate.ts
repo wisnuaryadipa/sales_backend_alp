@@ -1,20 +1,33 @@
+import { TransactionType } from '@src/interfaces/warehouse/ITransactionType';
+
 import {Request, Response} from 'express';
-import {BaseController} from '@src/controllers/baseController';
-import {services} from '@src/services';
-import IFilterTransaction from "@src/interfaces/warehouse/ITransactions";
+import { BaseController } from "@src/controllers/baseController";
+import {services} from '@src/services'
 import moment from 'moment';
+import { options } from 'joi';
+import Joi from 'joi';
+import { IUser } from '@src/interfaces/db/IUser';
 
 
 class Controller extends BaseController {
-    
+
     requestHandler = async (req: Request, res: Response) => {
-        const {dateEnd, dateStart, itemId, warehouseId, transactionType} = req.query;
+        /** 
+         * Input : ItemId:String, WarehouseId:Integer, Date:String
+         * Output : Quantity
+         * 
+        */
+        const itemId = req.query.itemId?.toString();
+        const date = moment(req.query.date?.toString().concat(" 23:59:59")).toDate();
+        const warehouseId = (req.query.warehouseId?.toString()) ? parseInt(req.query.warehouseId?.toString()) : undefined;
+
+        const lastStockOpname = await services.warehouse.stockOpname.getLatestItemOpnameBeforeDate(itemId, date, warehouseId);
         const filterQuery = {
-            dateEnd: (dateEnd) ? moment(dateEnd?.toString()).toDate() : undefined,
-            dateStart: (dateStart) ? moment(dateStart?.toString()).toDate() : undefined,
+            dateEnd: (date) ? moment(date?.toString()).toDate() : undefined,
+            dateStart: (lastStockOpname) ? moment(lastStockOpname.createdAt?.toString()).toDate() : undefined,
             itemId: itemId?.toString(),
-            transactionType: transactionType?.toString().toUpperCase() ,
-            warehouseId: (warehouseId?.toString()) ? parseInt(warehouseId?.toString()) : undefined
+            warehouseId: warehouseId,
+            transactionType: undefined
         };
 
         const totalIn: number = (filterQuery.transactionType == "IN" || (!filterQuery.transactionType)) ? await services.warehouse.transaction.getTotalQuantity({...filterQuery, transactionType: "IN"}) : 0;
@@ -22,7 +35,9 @@ class Controller extends BaseController {
         const totalSwapin: number = (filterQuery.transactionType == "SWAPIN" || (!filterQuery.transactionType)) ? await services.warehouse.transaction.getTotalQuantity({...filterQuery, transactionType: "SWAPIN"}) : 0;
         const totalSwapout: number = (filterQuery.transactionType == "SWAPOUT" || (!filterQuery.transactionType)) ? await services.warehouse.transaction.getTotalQuantity({...filterQuery, transactionType: "SWAPOUT"}) : 0;
         const total: number = (totalIn + totalSwapin) - (totalOut + totalSwapout);
-
+        
+        const _qtyOpname = (lastStockOpname) ? lastStockOpname.quantity : 0;
+        const _dateOpname = (lastStockOpname) ? lastStockOpname.dateOpname : null;
         const data = {
             listTransactions: await services.warehouse.transaction.getFilterTransaction(filterQuery),
             totalQuantity: {
@@ -30,11 +45,14 @@ class Controller extends BaseController {
                 out: totalOut,
                 swapin: totalSwapin,
                 swapout: totalSwapout,
-                all: total,
+                qtyOpname: _qtyOpname,
+                dateOpname: _dateOpname,
+                all: _qtyOpname+total,
             }
         }
-        this.sendResponse(req, res, { data });
+        this.sendResponse(req, res, {data})
     }
+
 
 }
 

@@ -6,7 +6,7 @@ const stck_raw_tm_jenisitem = (sequelize: Sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        jenis_item: {
+        sub_jenis_item: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -18,12 +18,17 @@ const stck_raw_tm_jenisitem = (sequelize: Sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        created_at: {
+        created_by: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             field: 'created_at'
         },
-        updated_at: {
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            field: 'created_at'
+        },
+        updatedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             field: 'updated_at'

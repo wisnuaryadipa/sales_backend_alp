@@ -18,7 +18,8 @@ class Controller extends BaseController {
          * 
         */
         
-        const data = services.warehouse.master.subJenisItem.getAllSubJenisItems();
+        const subJenisId = req.query.subJenisId ? req.query.subJenisId.toString() : " ";
+        const data = await services.warehouse.master.item.getItemsBySubJenisId(subJenisId);
         this.sendResponse(req, res, {data})
     }
 

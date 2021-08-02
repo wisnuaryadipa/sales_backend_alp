@@ -28,7 +28,8 @@ const stck_raw_cutoff_stock = (sequelize: Sequelize) => {
         },
         latest_stock: {
             type: DataTypes.INTEGER,
-            allowNull: true
+            allowNull: true,
+            field: 'lastest_stock'
         },
         send_date: {
             type: DataTypes.INTEGER,
@@ -38,12 +39,12 @@ const stck_raw_cutoff_stock = (sequelize: Sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        created_at: {
+        createdAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             field: 'created_at'
         },
-        updated_at: {
+        updatedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             field: 'updated_at'

@@ -1,7 +1,7 @@
 export default interface IFilter {
     itemId?: string | undefined,
-    dateStart?: string | undefined,
-    dateEnd?: string | undefined,
+    dateStart?: Date | undefined,
+    dateEnd?: Date | undefined,
     warehouseId?: number | undefined,
 
 }
