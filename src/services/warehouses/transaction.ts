@@ -1,7 +1,7 @@
 import models from '@src/models/postgres';
 import ITransactions, {TransactionType} from '@src/interfaces/warehouse/ITransactions';
 import moment from 'moment';
-import {Op} from 'sequelize';
+import {Op, Model} from 'sequelize';
 
 class Service {
     async getTransactionById(transactionId: any) {
@@ -29,12 +29,20 @@ class Service {
         const {dateEnd, dateStart, itemId, warehouseId, transactionType} = filterValues;
         const where: any = {};
 
-        (dateEnd && dateStart) && (where['created_at'] = { [Op.between]: [moment(dateStart), moment(dateEnd)] });
+        if (dateEnd) {
+            if (dateStart) {
+                // If dateStart and dateEnd has value (declared)
+                where['created_at'] = { [Op.between]: [moment(dateStart), moment(dateEnd)] }
+            } else {
+                // If only dateEnd has value
+                where['created_at'] = { [Op.lte]: moment(dateEnd) }
+            }
+        }
         (itemId) && (where['item_id'] = itemId);
         (warehouseId) && (where['gudang_id'] = warehouseId);
         (transactionType) && (where['status'] = transactionType);
-
         const transactions = await models.stck_raw_stock.findAll({where});
+        
         return transactions;
     }
     async getTotalQuantity(args :any) {
@@ -42,11 +50,20 @@ class Service {
         const {dateEnd, dateStart, itemId, warehouseId, transactionType} = args;
         let transactions = 0;
         const where: any = {};
-        console.log(args);
-        (dateEnd && dateStart) && (where['created_at'] = { [Op.between]: [moment(dateStart), moment(dateEnd)] });
+        
+        if (dateEnd) {
+            if (dateStart) {
+                // If dateStart and dateEnd has value (declared)
+                where['created_at'] = { [Op.between]: [moment(dateStart), moment(dateEnd)] }
+            } else {
+                // If only dateEnd has value
+                where['created_at'] = { [Op.lte]: moment(dateEnd) }
+            }
+        }
         (itemId) && (where['item_id'] = itemId);
         (warehouseId) && (where['gudang_id'] = warehouseId);
         (transactionType) && (where['status'] = transactionType);
+
 
         await models.stck_raw_stock.sum('quantity', {where}).then((transaction: any) => {
             transactions = transaction;

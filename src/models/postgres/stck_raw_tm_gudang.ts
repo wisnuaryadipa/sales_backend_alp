@@ -32,10 +32,15 @@ const stck_raw_tm_gudang = (sequelize: Sequelize) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-      }, {
+    }, {
         // Another option
-      });
+    });
     
+    stck_raw_tm_gudang.addScope('activeGudang', {
+        where: {
+            status: '1'
+        }
+    })
     return stck_raw_tm_gudang;
 }
 

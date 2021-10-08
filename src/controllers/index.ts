@@ -1,20 +1,9 @@
-import getAllUsers from '@src/controllers/api/user/getAllUsers';
-import getUser from '@src/controllers/api/user/getUser';
-import getAllRoles from '@src/controllers/api/role/getAllRoles';
-import getRole from '@src/controllers/api/role/getRole';
-import warehouseControllers from '@src/controllers/api/warehouses';
+import apiControllers from '@src/controllers/api'
+import logicControllers from '@src/controllers/logic'
 
-
-const api = {
-    user: {
-        getAllUsers,
-        getUser
-    },
-    role: {
-        getAllRoles,
-        getRole,
-    },
-    warehouse: warehouseControllers
+const controllers = {
+    api: apiControllers,
+    logic: logicControllers
 }
 
-export default api;
+export default controllers;

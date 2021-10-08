@@ -36,6 +36,13 @@ const stck_raw_tm_sub_jenisitem = (sequelize: Sequelize) => {
       }, {
         // Another option
       });
+
+      stck_raw_tm_sub_jenisitem.addScope('activeSubJenisItem', {
+          where: {
+              status: '1'
+          }
+      })
+
     
     return stck_raw_tm_sub_jenisitem;
 }

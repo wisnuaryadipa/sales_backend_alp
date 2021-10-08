@@ -11,17 +11,19 @@ const sequelize : any = {
     "database": dbConfig.postgres?.database || "",
     "schema": dbConfig.postgres?.schema || "",
     "dialect": "postgres",
-    "logging": true,
+    "logging": false,
     "timezone": "+07:00",
     "operatorsAliases": false,
     "define": {
         "freezeTableName": true
     },
+    "query": { "raw": true },
     "pool": {
-      "max": 30,
+      "max": 5,
       "min": 0,
-      "acquire": 1000000000,
-      "idle": 10000000
+      "acquire": 20000,
+      "idle": 5000,
+      "evict": 1000
     }
 }
 

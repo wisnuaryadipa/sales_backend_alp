@@ -1,4 +1,25 @@
-import {DataTypes, Sequelize} from 'sequelize';
+import {DataTypes, Model, Sequelize} from 'sequelize';
+
+class Transaction extends Model {
+    public item_id!: number;
+    public quantity!: number;
+    public lastedit_by!: number;
+    public created_by: number|undefined;
+    public status!: number;
+    public lastest_stock: number|undefined;
+    public send_date: number|undefined;
+    public keterangan!: number;
+    public createdAt!: number;
+    public updatedAt!: number;
+    public gudang_id: number|undefined;
+    public no_spk!: number;
+    public kertas_status: number|undefined;
+    public supplier: number|undefined;
+    public swap_gudang: number|undefined;
+    public status_retur: number|undefined;
+}
+
+
 
 const stck_raw_stock = (sequelize: Sequelize) => {
     const stck_raw_stock = sequelize.define('stck_raw_stock', {
@@ -20,7 +41,7 @@ const stck_raw_stock = (sequelize: Sequelize) => {
         },
         status: {
             type: DataTypes.STRING,
-        allowNull: false
+            allowNull: false
         },
         lastest_stock: {
             type: DataTypes.INTEGER,

@@ -1,11 +1,11 @@
 import Router from 'express';
-import controllers from '@src/controllers';
+import transactionControllers from '@src/controllers/api/warehouses/transaction';
 
 const transactionRoutes = Router();
-transactionRoutes.get('/all', controllers.warehouse.transaction.getAllTransactions.requestHandler);
-transactionRoutes.get('/items/:itemId', controllers.warehouse.transaction.getTransactionByItemId.requestHandler);
-transactionRoutes.get('/warehouse/:warehouseId', controllers.warehouse.transaction.getTransactionByWarehouseId.requestHandler);
-transactionRoutes.get('/type/:type', controllers.warehouse.transaction.getTransactionByType.requestHandler);
-transactionRoutes.get('/filter', controllers.warehouse.transaction.getFilteredTransaction.requestHandler);
+transactionRoutes.get('/all', transactionControllers.getAllTransactions.requestHandler);
+transactionRoutes.get('/items/:itemId', transactionControllers.getTransactionByItemId.requestHandler);
+transactionRoutes.get('/warehouse/:warehouseId', transactionControllers.getTransactionByWarehouseId.requestHandler);
+transactionRoutes.get('/type/:type', transactionControllers.getTransactionByType.requestHandler);
+transactionRoutes.get('/filter', transactionControllers.getFilteredTransaction.requestHandler);
 
 export default transactionRoutes;

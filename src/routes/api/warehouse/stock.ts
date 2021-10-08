@@ -1,7 +1,7 @@
 import Router from 'express';
-import controllers from '@src/controllers';
+import stockControllers from '@src/controllers/api/warehouses/stock';
 
 const stockRotes = Router();
-stockRotes.get('/total/specificdate', controllers.warehouse.stock.getStockbydate.requestHandler);
+stockRotes.get('/total/specificdate', stockControllers.getStockbydate.requestHandler);
 
 export default stockRotes;
