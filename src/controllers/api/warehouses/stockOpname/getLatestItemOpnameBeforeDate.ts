@@ -13,7 +13,7 @@ class Controller extends BaseController{
         const beforeDate = moment(req.query.beforeDate?.toString()).toDate();
         const warehouseId = (req.query.warehouseId?.toString()) ? parseInt(req.query.warehouseId?.toString()) : undefined;
 
-        const data = await services.warehouse.stockOpname.getLatestItemOpnameBeforeDate(itemId, beforeDate, warehouseId);
+        const data = await services.warehouse.stockOpname.getLatestItemOpnameBeforeDate(itemId, warehouseId, beforeDate);
         this.sendResponse(req, res, { data });
 
         

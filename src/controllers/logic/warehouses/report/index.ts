@@ -1,7 +1,7 @@
-import monthly from "@src/controllers/logic/warehouses/report/monthly";
+import reportMonthlyController from "@src/controllers/logic/warehouses/report/monthly";
 
 const reportController = {
-    monthly: monthly,
+    monthly: reportMonthlyController,
 }
 
 export default reportController;

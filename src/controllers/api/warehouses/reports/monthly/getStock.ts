@@ -11,7 +11,7 @@ class Controller extends BaseController {
 
     requestHandler = async (req: Request, res: Response) => {
         
-        const data = await logicController.warehouses.report.monthly.index();
+        const data = await logicController.warehouses.report.monthly.generator.index();
         this.sendResponse(req, res, {data});
     }
 

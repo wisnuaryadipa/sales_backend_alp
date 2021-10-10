@@ -14,7 +14,7 @@ class Controller {
         return transactions;
     }
 
-    getTransactionsByDateRange = async (item: string, warehouseId: number, dateStart: Date, dateEnd: Date) => {
+    getTransactionsByDateRange = async (item: string, warehouseId: number, dateStart: Date | undefined, dateEnd: Date) => {
 
         const params: IFilterTransaction = {
             itemId: item,

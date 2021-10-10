@@ -4,6 +4,7 @@ import logicController from '@src/controllers/logic';
 import transWhLogicController from '@src/controllers/logic/warehouses/transactions';
 import moment from 'moment';
 import fs from 'fs';
+import xlsx from 'exceljs';
 import _ from 'lodash';
 
 
@@ -20,18 +21,15 @@ class Controller {
 
             let _item = await Promise.all(_itemsBySubJenis.map(async (item:any, index:any) => {
                 
-                    const monthStart = 1;
-                    const yearStart= 2018;
-                    let _item = item;
-                    _item.report =  {};
-                if(item.uid === 'A20008'){
+                const yearStart= 2018;
+                let _item = item;
+                _item.report =  {};
                     for (let year = yearStart; year <= moment().year(); year++) {
                         _item.report[year] =  {};
     
                         for (let month = 0; month < 12; month++) {
-
+    
                             const selectedMonthYear = moment().year(year).month(month).startOf('month').toDate();
-                            
                             const warehouses = await services.warehouse.master.warehouses.getAllWarehouse();
                             const amountTotal = {
                                 "StockAt20th": 0,
@@ -42,34 +40,37 @@ class Controller {
                             _item.report[year][Controller.bulan[month]] = {};
                             _item.report[year][Controller.bulan[month]].detailsWarehouses = {}
                             for (const warehouse of warehouses) {
-
-                                const transactionWholeMonth = await transWhLogicController.getTransactionWholeSelectedMonth(item.uid, warehouse.id, selectedMonthYear)
+    
+                                const transactionWholeMonth = await transWhLogicController.getTransactionWholeSelectedMonth(item.uid, warehouse.id, selectedMonthYear);
                                 const periodicTransaction = await this.getPeriodicTransactions(item.uid, warehouse.id, month, year);
-                                const stockAt20th = await this.stockAtTwentieth(_.cloneDeep(periodicTransaction), month, year);
-                                const stockOnTheEndOfTheMonth = periodicTransaction;
+                                const stockAt20th = this.getStockAtTwentieth(_.cloneDeep(periodicTransaction), month, year);
+                                const stockOnTheEndOfTheMonth = this.getStockOnTheEndOfTheMonth(periodicTransaction);
                                 const usedGoods = this.CountUsedGoodsMonthly(transactionWholeMonth);
                                 const receivedGoods = this.CountReceivedGoodsMonthly(transactionWholeMonth);
-
-                                // amountTotal.StockAt20th = amountTotal.StockAt20th + StockAt20th.totalQuantity.all;
                                 const amountObj = {
-
+    
                                     "StockAt20th": stockAt20th,
                                     "StockendOfMonth": stockOnTheEndOfTheMonth,
                                     "recivedGoods": receivedGoods,
                                     "usedGoods": usedGoods
                                 }
                                 _item.report[year][Controller.bulan[month]].detailsWarehouses[warehouse.nama_gudang] =  amountObj;
+                                amountTotal.StockAt20th += stockAt20th.all;
+                                amountTotal.StockendOfMonth += stockOnTheEndOfTheMonth.all;
+                                amountTotal.recivedGoods += receivedGoods;
+                                amountTotal.usedGoods += usedGoods;
+                                
                             }
                             
                             _item.report[year][Controller.bulan[month]].totalQuantity = amountTotal;
                             // month == 1 && console.log(await this.stockAtTwentieth(item.uid, month, year))
                             
+                            console.log('working ',month);
                         }
                     }
-                }
+                    return _item;
                 
-                return _item;
-
+                
             }))
 
             _subJenis.items = _item;
@@ -82,35 +83,45 @@ class Controller {
     }
 
     getPeriodicTransactions = async (itemId: string, warehouseId: number, month: number, year: number) => {
-        
+
         const stockOpnameInTheEndOfTheMonth = await logicController.warehouses.stockOpname.getStockOpnameInTheEndOfTheMonth(itemId, warehouseId, month, year);
-        let stock = {};
+        let lastStockOpname: any;
+        let result = {
+            transactions: {},
+            lastStockOpname: {}
+        }
+        let transactions = {};
 
         if(stockOpnameInTheEndOfTheMonth) {
             // Condition to handling where there is an opname around before the end of the month
             // Function to count quantity before doing stock opname
             const endDate = stockOpnameInTheEndOfTheMonth.createdAt;
-            stock = await logicController.warehouses.filter.stockByDateByWarehouse(itemId, warehouseId, endDate);
+            lastStockOpname = await services.warehouse.stockOpname.getLatestItemOpnameBeforeDate(itemId, warehouseId, endDate);
+            const startDate = (lastStockOpname) ? moment(lastStockOpname.createdAt?.toString()).toDate() : undefined;
+            transactions = await logicController.warehouses.transcations.getTransactionsByDateRange(itemId, warehouseId, startDate, endDate);
+            // stock = await logicController.warehouses.filter.stockByDateByWarehouse(itemId, warehouseId, endDate);
 
         } else {
             // Condition to decide endDate to be at the end of the month
             // Function to count quantity before exacly at the end of the month
             const _thisDate = moment().year(year).month(month).endOf('month');
             const endDate = moment(_.cloneDeep(_thisDate).endOf('month')).toDate();
-            stock = await logicController.warehouses.filter.stockByDateByWarehouse(itemId, warehouseId, endDate);
+            lastStockOpname = await services.warehouse.stockOpname.getLatestItemOpnameBeforeDate(itemId, warehouseId, endDate);
+            const startDate = (lastStockOpname) ? moment(lastStockOpname.createdAt?.toString()).toDate() : undefined;
+            transactions = await logicController.warehouses.transcations.getTransactionsByDateRange(itemId, warehouseId, startDate, endDate);
+            // stock = await logicController.warehouses.filter.stockByDateByWarehouse(itemId, warehouseId, endDate);
 
         }
+        
+        result.transactions = transactions;
+        result.lastStockOpname = lastStockOpname;
 
-        return stock;
+        return result;
     }
 
     CountReceivedGoodsMonthly = (transactions: any) => {
 
         const filteredInTransaction = transWhLogicController.filterTransactionByStatus(transactions, "IN");
-        if(filteredInTransaction){
-
-            console.log(filteredInTransaction)
-        }
         const counted = _.sumBy(filteredInTransaction, 'quantity');
 
         return counted;
@@ -126,27 +137,61 @@ class Controller {
 
     }
 
-    stockAtTwentieth = async (periodicTransactions: any, month: number, year: number) => {
+    getStockAtTwentieth = (periodicTransactions: any, month: number, year: number) => {
+        let obj = {
+            in: 0,
+            out: 0,
+            swapin: 0,
+            swapout: 0,
+            lastStockOpname: 0,
+            all: 0,
+        };
         
-        const transactions = periodicTransactions.listTransactions;
+        const transactions = periodicTransactions.transactions;
+        const qtyStockOpname = (periodicTransactions.lastStockOpname) ? periodicTransactions.lastStockOpname.quantity : 0;
         const dateCurrent20th = moment().year(year).month(month).date(20).endOf('day');
         const filteredTransactions = _.filter(transactions, ({createdAt}) => moment(createdAt).isBefore(dateCurrent20th));
         const IN = _.sumBy(_.filter(_.cloneDeep(filteredTransactions), ({status}) => status == "IN"), 'quantity');
         const OUT = _.sumBy(_.filter(_.cloneDeep(filteredTransactions), ({status}) => status == "OUT"), 'quantity');
         const SWAPIN = _.sumBy(_.filter(_.cloneDeep(filteredTransactions), ({status}) => status == "SWAPIN"), 'quantity');
         const SWAPOUT = _.sumBy(_.filter(_.cloneDeep(filteredTransactions), ({status}) => status == "SWAPOUT"), 'quantity');
-        const TOTAL = periodicTransactions.qtyOpname + (IN + SWAPIN) - (OUT - SWAPOUT);
-        periodicTransactions.listTransactions = filteredTransactions;
-        periodicTransactions.totalQuantity.in = IN;
-        periodicTransactions.totalQuantity.out = OUT;
-        periodicTransactions.totalQuantity.swapin = SWAPIN;
-        periodicTransactions.totalQuantity.swapout = SWAPOUT;
-        periodicTransactions.totalQuantity.all = TOTAL;
+        const TOTAL = qtyStockOpname + (IN + SWAPIN) - (OUT - SWAPOUT);
+        obj.in = IN;
+        obj.out = OUT;
+        obj.swapin = SWAPIN;
+        obj.swapout = SWAPOUT;
+        obj.lastStockOpname = qtyStockOpname;
+        obj.all = TOTAL;
 
-        return periodicTransactions;
+        return obj;
     }
 
+    getStockOnTheEndOfTheMonth = (periodicTransactions: any) => {
+        let obj = {
+            in: 0,
+            out: 0,
+            swapin: 0,
+            swapout: 0,
+            lastStockOpname: 0,
+            all: 0,
+        };
 
+        const transactions = periodicTransactions.transactions;
+        const qtyStockOpname = (periodicTransactions.lastStockOpname) ? periodicTransactions.lastStockOpname.quantity : 0;
+        const IN = _.sumBy(_.filter(_.cloneDeep(transactions), ({status}) => status == "IN"), 'quantity');
+        const OUT = _.sumBy(_.filter(_.cloneDeep(transactions), ({status}) => status == "OUT"), 'quantity');
+        const SWAPIN = _.sumBy(_.filter(_.cloneDeep(transactions), ({status}) => status == "SWAPIN"), 'quantity');
+        const SWAPOUT = _.sumBy(_.filter(_.cloneDeep(transactions), ({status}) => status == "SWAPOUT"), 'quantity');
+        const TOTAL = qtyStockOpname + (IN + SWAPIN) - (OUT - SWAPOUT);
+        obj.in = IN;
+        obj.out = OUT;
+        obj.swapin = SWAPIN;
+        obj.swapout = SWAPOUT;
+        obj.lastStockOpname = qtyStockOpname;
+        obj.all = TOTAL;
+
+        return obj;
+    }
 
     writeJsonFile = (data: any, filename: string) => {
         let dataJsonFormat = JSON.stringify(data, null, 2);
@@ -155,6 +200,8 @@ class Controller {
             console.log('Data has been written')
         })
     }
+
+
 
 }
 

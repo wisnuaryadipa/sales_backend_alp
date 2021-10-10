@@ -26,7 +26,7 @@ class Service {
         });
         return latestOpname;
     }
-    getLatestItemOpnameBeforeDate = async (itemId?: string, date?: Date, warehouseId?: number) => {
+    getLatestItemOpnameBeforeDate = async (itemId?: string, warehouseId?: number, date?: Date) => {
         // Find the latest inputed opname item before spcified date
         const latestOpnameBefore = models.stck_raw_cutoff_stock.findOne({
             where: {
@@ -41,7 +41,7 @@ class Service {
 
         const dateStart = moment(moment().year(year).month(month).date(23).endOf('day'));
         const dateEnd = moment(_.cloneDeep(dateStart).endOf('month')).toDate();
-        
+
         const latestOpname = await models.stck_raw_cutoff_stock.findOne({
             where: {
                 item_id: itemId, 
