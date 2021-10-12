@@ -21,9 +21,13 @@ class Controller {
         let wb: Workbook = new xlsx.Workbook();
         
         wb = this.initial(wb);
-        let firstSheet: Worksheet = wb.addWorksheet('Montly');
-        firstSheet = this.createFieldColumn(firstSheet);
-        firstSheet = this.addData(data, firstSheet);
+        let itemSheet: Worksheet = wb.addWorksheet('Montly by Item');
+        itemSheet = this.createFieldColumn(itemSheet);
+        itemSheet = this.addDataItems(data, itemSheet);
+
+        let subItemSheet: Worksheet = wb.addWorksheet('Montly by Sub Item');
+        subItemSheet = this.createFieldColumn(subItemSheet);
+        subItemSheet = this.addDataItems(data, subItemSheet);
 
         wb.xlsx.writeFile('reportMonth '+timeNow+'.xlsx')
 
@@ -68,7 +72,7 @@ class Controller {
 
     }
 
-    addData = (data: any, workSheet: Worksheet) => {
+    addDataItems = (data: any, workSheet: Worksheet) => {
 
         data.forEach((subJenisItem: any) => {
             
@@ -94,7 +98,6 @@ class Controller {
                         workSheet.getCell(this.currentRow,5).value = item.report[yearKey][monthKey].totalQuantity.StockAt20th;
                         workSheet.getCell(this.currentRow,6).value = item.report[yearKey][monthKey].totalQuantity.StockendOfMonth;
                         workSheet.getCell(this.currentRow,7).value = item.report[yearKey][monthKey].totalQuantity.usedGoods;
-                        
                     }
                 }
                 
@@ -102,7 +105,11 @@ class Controller {
         })
 
         return workSheet;
-    } 
+    }
+    
+    addDataSubItem = (data: any, workSheet: Worksheet) => {
+        
+    }
 
 
 

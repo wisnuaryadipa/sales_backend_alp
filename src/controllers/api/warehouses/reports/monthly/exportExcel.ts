@@ -8,7 +8,7 @@ class Controller extends BaseController {
 
     requestHandler = async (req: Request, res: Response) => {
 
-        let readFile = fs.readFileSync('./export/report/v2/monthlyReport.json')
+        let readFile = fs.readFileSync('./export/report/v4/monthlyReport.json')
         const file = JSON.parse(readFile.toString());
         
         const data = logicController.warehouses.report.monthly.exportExcel.index(file);
