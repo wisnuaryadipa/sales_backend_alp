@@ -4,6 +4,7 @@ import fs from 'fs';
 import _ from 'lodash';
 
 class Controller {
+    static bulan = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
 
     currentRow: number;
 
@@ -14,6 +15,10 @@ class Controller {
     addCurrRow = (): void => {
         this.currentRow += 1;
     }
+
+    resetCurrRow = (): void => {
+        this.currentRow = 0;
+    }
     
     index = (data: any) => {
 
@@ -21,13 +26,15 @@ class Controller {
         let wb: Workbook = new xlsx.Workbook();
         
         wb = this.initial(wb);
+        this.resetCurrRow();
         let itemSheet: Worksheet = wb.addWorksheet('Montly by Item');
         itemSheet = this.createFieldColumn(itemSheet);
         itemSheet = this.addDataItems(data, itemSheet);
 
+        this.resetCurrRow();
         let subItemSheet: Worksheet = wb.addWorksheet('Montly by Sub Item');
         subItemSheet = this.createFieldColumn(subItemSheet);
-        subItemSheet = this.addDataItems(data, subItemSheet);
+        subItemSheet = this.addDataSubItem(data, subItemSheet);
 
         wb.xlsx.writeFile('reportMonth '+timeNow+'.xlsx')
 
@@ -108,7 +115,48 @@ class Controller {
     }
     
     addDataSubItem = (data: any, workSheet: Worksheet) => {
-        
+        data.forEach((subJenisItem: any) => {
+
+            for (let year = 2018; year <= moment().year(); year++) {
+                this.addCurrRow();
+                workSheet.mergeCells(this.currentRow,1,this.currentRow,9);
+                workSheet.getCell(this.currentRow,1).value = subJenisItem.sub_jenis_item;
+                workSheet.getCell(this.currentRow,1).alignment = { vertical: 'middle', horizontal: 'center'}
+                this.addCurrRow();
+                workSheet.mergeCells(this.currentRow,1,this.currentRow,9);
+                workSheet.getCell(this.currentRow,1).value = year;
+                workSheet.getCell(this.currentRow,1).alignment = { vertical: 'middle', horizontal: 'center'}
+
+                for (let month = 0; month < 12; month++) {
+                    let StockAt20th: number|null = null;
+                    let StockendOfMonth: number|null = null;
+                    let recivedGoods: number|null = null;
+                    let usedGoods: number|null = null;
+                    let startYear = 2018;
+            
+                    subJenisItem.items.forEach((item:any) => {
+                        if (item.report[year][Controller.bulan[month]]) {
+                            StockAt20th += item.report[year][Controller.bulan[month]].totalQuantity.StockAt20th;
+                            StockendOfMonth += item.report[year][Controller.bulan[month]].totalQuantity.StockendOfMonth;
+                            recivedGoods += item.report[year][Controller.bulan[month]].totalQuantity.recivedGoods;
+                            usedGoods += item.report[year][Controller.bulan[month]].totalQuantity.usedGoods;
+                        }
+                    })
+                    
+                    this.addCurrRow();
+                    workSheet.getCell(this.currentRow,1).value = subJenisItem.sub_jenis_item;
+                    workSheet.getCell(this.currentRow,2).value = Controller.bulan[month].toUpperCase();
+                    workSheet.getCell(this.currentRow,4).value = recivedGoods;
+                    workSheet.getCell(this.currentRow,5).value = StockAt20th;
+                    workSheet.getCell(this.currentRow,6).value = StockendOfMonth;
+                    workSheet.getCell(this.currentRow,7).value = usedGoods;
+                }
+                
+            }
+        })
+
+        return workSheet;
+
     }
 
 
